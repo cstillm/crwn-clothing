@@ -3,7 +3,7 @@ import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.componet';
 import './sign-in.styles.scss';
 
-import { signInWithGoogle } from '../../firebase/firebase.utils';
+import { auth, signInWithGoogle } from '../../firebase/firebase.utils';
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -15,10 +15,23 @@ class SignIn extends React.Component {
         }
     }
 
-    handleSubmit = event => {
+    handleSubmit = async event => {
         event.preventDefault();
 
-        this.setState({ email: '', password: '' })
+        const { email, password} = this.state;
+
+        try {
+            // try to login with email and password
+            await auth.signInWithEmailAndPassword(email, password);
+            
+            // if success clear form
+            this.setState({ email: '', password: '' })
+
+        } catch (error) {
+            console.log(error);
+        }
+
+        
     }
 
     handleChange = event => {
@@ -34,8 +47,22 @@ class SignIn extends React.Component {
                 <span>Sign in with your email and password</span>
 
                 <form onSubmit={this.handleSubmit}>
-                    <FormInput name='email' type='email' value={this.state.email} handleChange={this.handleChange} label='email' required/>
-                    <FormInput name='password' type='password' value={this.state.password} handleChange={this.handleChange} label='password' required/>
+                    <FormInput 
+                        name='email' 
+                        type='email' 
+                        value={this.state.email} 
+                        handleChange={this.handleChange} 
+                        label='email' 
+                        required
+                    />
+                    <FormInput 
+                        name='password' 
+                        type='password' 
+                        value={this.state.password} 
+                        handleChange={this.handleChange} 
+                        label='password' 
+                        required
+                    />
 
                     <div className='buttons'>
                         <CustomButton type='submit'>Sign In</CustomButton>
